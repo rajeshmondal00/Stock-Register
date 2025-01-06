@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+            color:#4CAF50;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sell Product</h1>
+        <form id="sellProductForm">
+            <label for="customerName">Customer Name:</label>
+            <input type="text" id="customerName" name="customerName" placeholder="Enter customer name">
+            
+            <label for="productName">Product Name:</label>
+            <select id="productName" name="productName" onchange="toggleProductInput()">
+                <option value="">Select product</option>
+                {% for product in products %}
+                <option value="{{ product.id }}">{{ product.name }}</option>
+                {% endfor %}
+                <option value="other">Other</option>
+            </select>
+            <input type="text" id="customProductName" name="customProductName" placeholder="Enter product name" style="display: none; margin-top: 10px;">
+
+            <label for="Weight">Weight:</label>
+            <input type="number" id="Weight" name="Weight" placeholder="Enter Weight" required>
+
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" required>
+
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" placeholder="Enter price" required>
+
+            <label for="paymentMethod">Payment Method:</label>
+            <select id="paymentMethod" name="paymentMethod" required>
+                <option value="">Select payment method</option>
+                <option value="cash">Cash</option>
+                <option value="credit">Credit</option>
+                <option value="online">Online</option>
+            </select>
+
+            <button type="submit">Sell Product</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('sellProductForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Product sold successfully!');
+        });
+    </script>
+    <script src="{% static '/js/sell_product.js' %}"></script>
+</body>
+</html>

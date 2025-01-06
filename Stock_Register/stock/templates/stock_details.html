@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Stock Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color:#4CAF50;
+        }
+        section {
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        select, input {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+        @media (min-width: 768px) {
+            .button-group {
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px;
+            }
+            button {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Details</h1>
+
+        <!-- Search for Product -->
+        <div class="search-container">
+            <select id="product-select">
+                <option value="">Select Product</option>
+                <!-- Options will be populated dynamically -->
+            </select>
+            <button onclick="searchProductStock()">Search</button>
+        </div>
+
+        <!-- Current Stock Data -->
+        <section>
+            <h2>Current Stock</h2>
+            <table id="current-stock-table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Price per Unit</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated dynamically -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Stock History -->
+        <section>
+            <h2>Stock History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Transaction Type</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-01-01</td>
+                        <td>Added</td>
+                        <td>Example Product</td>
+                        <td>30</td>
+                        <td>$600</td>
+                    </tr>
+                    <tr>
+                        <td>2025-01-02</td>
+                        <td>Sold</td>
+                        <td>Example Product</td>
+                        <td>20</td>
+                        <td>$400</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Download Buttons -->
+        <section>
+            <h2>Download Data</h2>
+            <div class="button-group">
+                <button onclick="downloadExcel('product')">Download Product Data</button>
+                <button onclick="downloadExcel('sell')">Download Sell Data</button>
+                <button onclick="downloadExcel('current')">Download Current Stock</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="{% static '/js/stock_details.js' %}"></script>
+</body>
+</html>
