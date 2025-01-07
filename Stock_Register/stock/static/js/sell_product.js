@@ -37,3 +37,5 @@ function toggleProductInput() {
     })
     .catch(error => console.error('Error fetching products:', error));
 }
+
+

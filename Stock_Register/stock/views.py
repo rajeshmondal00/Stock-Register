@@ -10,29 +10,29 @@ def home(request):
 
 ## add products to the stock 
 def add_stocks(request):
-    # if request.method == "post":
-    #     product_id = request.POST.get('product')
-    #     quantity = request.POST.get('quantity')
-    #     price = request.POST.get('price')
+    if request.method == "post":
+        product_id = request.POST.get('product')
+        quantity = request.POST.get('quantity')
+        price = request.POST.get('price')
 
-    #     if not (product_id and quantity and price):
-    #         return JsonResponse({'success': False, 'message': 'All fields are required.'})
+        if not (product_id and quantity and price):
+            return JsonResponse({'success': False, 'message': 'All fields are required.'})
 
-    #     try:
-    #         product = Product.objects.get(pro_id=product_id)
-    #         stock = Stock.objects.create(
-    #             sto_id=f"STO-{product_id}-{quantity}",
-    #             pro_id=product,
-    #             type="1",  # Assuming "1" means "Buy"
-    #             date=datetime.date.today(),
-    #             quantity=quantity,
-    #             price=price
-    #         )
-    #         return JsonResponse({'success': True, 'message': 'Stock added successfully.'})
-    #     except Product.DoesNotExist:
-    #         return JsonResponse({'success': False, 'message': 'Product not found.'})
-    #     except Exception as e:
-    #         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+        try:
+            product = Product.objects.get(pro_id=product_id)
+            stock = Stock.objects.create(
+                sto_id=f"STO-{product_id}-{quantity}",
+                pro_id=product,
+                type="1",  # Assuming "1" means "Buy"
+                date=datetime.date.today(),
+                quantity=quantity,
+                price=price
+            )
+            return JsonResponse({'success': True, 'message': 'Stock added successfully.'})
+        except Product.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Product not found.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
 
     products = Product.objects.all() # filter the product details
     suppliers = Supplier.objects.all() # filter the supplier details
