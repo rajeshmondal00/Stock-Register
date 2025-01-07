@@ -14,7 +14,7 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f9;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
         }
         .container {
             width: 90%;
@@ -63,15 +63,16 @@
 <body>
     <div class="container">
         <h1>Sell Product</h1>
-        <form id="sellProductForm">
+        <form id="sellProductForm" method="POST">
+            {% csrf_token %}
             <label for="customerName">Customer Name:</label>
             <input type="text" id="customerName" name="customerName" placeholder="Enter customer name">
             
             <label for="productName">Product Name:</label>
-            <select id="productName" name="productName" onchange="toggleProductInput()">
+            <select id="productName" name="productName" onchange="toggleProductInput(event)">
                 <option value="">Select product</option>
                 {% for product in products %}
-                <option value="{{ product.pro_name }}">{{ product.pro_name }}</option>
+                <option value="{{ product.pro_name }}" data-id="{{product.pro_id}}">{{ product.pro_name }}</option>
                 {% endfor %}
                 <option value="other">Other</option>
             </select>
@@ -97,15 +98,9 @@
                 <option value="online">Online</option>
             </select>
 
-            <button type="submit">Sell Product</button>
+            <button type="button" onclick="sellProductForm()">Sell Product</button>
         </form>
     </div>
-    <script>
-        document.getElementById('sellProductForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            alert('Product sold successfully!');
-        });
-    </script>
     <script src="{% static '/js/sell_product.js' %}"></script>
 </body>
 </html>

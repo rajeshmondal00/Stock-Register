@@ -2,37 +2,37 @@ from django.shortcuts import render
 import pandas as pd
 from django.http import HttpResponse,JsonResponse
 from .models import *
-import csv
-
+import csv,json
 ## home page
 def home(request):
     return render(request,"index.html")
 
 ## add products to the stock 
 def add_stocks(request):
-    if request.method == "post":
-        product_id = request.POST.get('product')
-        quantity = request.POST.get('quantity')
-        price = request.POST.get('price')
+    if request.method == "POST":
+            buyer_name = request.POST.get("buyerName", "").strip()
+            custom_buyer_name = request.POST.get("customBuyerName", "").strip()
+            product_name = request.POST.get("productName", "").strip()
+            custom_product_name = request.POST.get("customProductName", "").strip()
+            date = request.POST.get("date", "")
+            quantity = int(request.POST.get("quantity", 0))
+            weight = int(request.POST.get("Weight", 0))
+            payment_method = request.POST.get("paymentMethod", "").strip()
+            price = int(request.POST.get("price", 0))
 
-        if not (product_id and quantity and price):
-            return JsonResponse({'success': False, 'message': 'All fields are required.'})
+            # Additional Data from JavaScript
+            supplier_id = request.POST.get("supplier_id", "").strip()
 
-        try:
-            product = Product.objects.get(pro_id=product_id)
-            stock = Stock.objects.create(
-                sto_id=f"STO-{product_id}-{quantity}",
-                pro_id=product,
-                type="1",  # Assuming "1" means "Buy"
-                date=datetime.date.today(),
-                quantity=quantity,
-                price=price
-            )
-            return JsonResponse({'success': True, 'message': 'Stock added successfully.'})
-        except Product.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Product not found.'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+
+            # Process data
+            print("quantity:",quantity)
+            print("Supplier ID:", supplier_id)
+            print("Product Name:", product_name)
+            return JsonResponse({'success': True, 'message': 'Stock added successfully.'}, status=200)
+        # except Product.DoesNotExist:
+        #     return JsonResponse({'success': False, 'message': 'Product not found.'})
+        # except Exception as e:
+        #     return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
 
     products = Product.objects.all() # filter the product details
     suppliers = Supplier.objects.all() # filter the supplier details
