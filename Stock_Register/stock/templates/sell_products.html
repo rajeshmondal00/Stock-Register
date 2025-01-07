@@ -71,7 +71,7 @@
             <select id="productName" name="productName" onchange="toggleProductInput()">
                 <option value="">Select product</option>
                 {% for product in products %}
-                <option value="{{ product.id }}">{{ product.name }}</option>
+                <option value="{{ product.pro_name }}">{{ product.pro_name }}</option>
                 {% endfor %}
                 <option value="other">Other</option>
             </select>

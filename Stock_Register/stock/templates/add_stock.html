@@ -79,20 +79,20 @@
         <h1>Add Stock</h1>
         <form id="addStockForm">
             <label for="buyerName">Supplier Name:</label>
-            <select id="buyerName" name="buyerName" onchange="toggleBuyerInput()">
+            <select id="buyerName" name="buyerName" onchange="toggleBuyerInput()" required>
                 <option value="">Select supplier</option>
                 {% for supplier in suppliers %}
-                <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                <option value="{{ supplier.supp_name }}">{{ supplier.supp_name }}</option>
                 {% endfor %}
                 <option value="other">Other</option>
             </select>
             <input type="text" id="customBuyerName" name="customBuyerName" placeholder="Enter buyer name" style="display: none; margin-top: 10px;">
             
             <label for="productName">Product Name:</label>
-            <select id="productName" name="productName" onchange="toggleProductInput()">
+            <select id="productName" name="productName" onchange="toggleProductInput(event)" required>
                 <option value="">Select product</option>
                 {% for product in products %}
-                <option value="{{ product.id }}">{{ product.name }}</option>
+                <option value="{{ product.pro_name }}" data-id="{{ product.pro_id }}">{{ product.pro_name }}</option>
                 {% endfor %}
                 <option value="other">Other</option>
             </select>
@@ -107,10 +107,18 @@
             <label for="Weight">Weight:</label>
             <input type="number" id="Weight" name="Weight" placeholder="Enter Weight" required>
 
+            <label for="paymentMethod">Payment Method:</label>
+            <select id="paymentMethod" name="paymentMethod" onchange="togglePaymentInput()" required>
+                <option value="">Select payment method</option>
+                <option value="cash">Cash</option>
+                <option value="credit">Credit</option>
+                <option value="online">Online</option>
+            </select>
+
             <label for="price">Price:</label>
             <input type="number" id="price" name="price" placeholder="Enter price per unit" required>
 
-            <button type="submit">Add Stock</button>
+            <button type="submit" onclick="addStockForm()">Add Stock</button>
         </form>
     </div>
 

@@ -10,6 +10,7 @@ urlpatterns = [
     path('stock-details/',views.stock_details,name="stock_details"),
     path('payments/',views.payments,name="payments"),
     path('payment-details/',views.payment_details,name="payment_details"),
+    path('get-product-price/',views.get_product_price,name="get_product_price"),
     # path('export-to-excel/', views.export_to_excel, name='export_to_excel'),
     # path('add-stock/', views.add_stock_view, name='add_stock'),
     # path('get-products/', views.get_products, name='get_products'),
