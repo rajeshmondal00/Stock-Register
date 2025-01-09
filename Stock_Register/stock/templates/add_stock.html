@@ -93,7 +93,7 @@
             <select id="productName" name="productName" onchange="toggleProductInput(event)" required>
                 <option value="">Select product</option>
                 {% for product in products %}
-                <option value="{{ product.pro_name }}" data-id="{{ product.pro_id }}">{{ product.pro_name }}</option>
+                <option value="{{ product.pro_name }}" data_id="{{ product.pro_id }}">{{ product.pro_name }}</option>
                 {% endfor %}
                 <option value="other">Other</option>
             </select>
@@ -115,6 +115,7 @@
                 <option value="credit">Credit</option>
                 <option value="online">Online</option>
             </select>
+            <input type="number" id="paymentValue" name="paymentValue" placeholder="Enter the Amount:" style="display: none; margin-top: 10px;">
 
             <label for="price">Price:</label>
             <input type="number" id="price" name="price" placeholder="Enter price per unit" required>

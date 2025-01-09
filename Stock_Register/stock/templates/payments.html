@@ -10,7 +10,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -27,6 +27,7 @@
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            color: #4CAF50;
         }
         form {
             display: flex;
@@ -77,8 +78,15 @@
     <div class="container">
         <h1>Add Payment Details</h1>
         <form id="payment-form">
-            <label for="payer-name">Payer Name</label>
-            <input type="text" id="payer-name" name="payer_name" placeholder="Enter payer's name" required>
+            <label for="buyerName">Payer Name:</label>
+            <select id="buyerName" name="buyerName" onchange="toggleBuyerInput()" required>
+                <option value="">Select supplier</option>
+                {% for supplier in suppliers %}
+                <option value="{{ supplier.supp_name }}" id="{{ supplier.supp_id }}">{{ supplier.supp_name }}</option>
+                {% endfor %}
+                <option value="other">Other</option>
+            </select>
+            <input type="text" id="customBuyerName" name="customBuyerName" placeholder="Enter payer's name" style="display: none; margin-top: 10px;">
 
             <label for="amount">Amount</label>
             <input type="number" id="amount" name="amount" placeholder="Enter amount" required>
@@ -98,6 +106,7 @@
         </form>
     </div>
 
+    <script src="{% static '/js/add_stock.js' %}"></script>
     <script src="{% static '/js/payments.js' %}"></script>
 </body>
 </html>

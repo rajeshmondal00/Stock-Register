@@ -1,6 +1,6 @@
 function toggleProductInput(event) {
   const selectedOption = event.target.options[event.target.selectedIndex];
-  const productId = selectedOption.getAttribute("data-id");
+  const productId = selectedOption.getAttribute("data_id");
   const productNameSelect = document.getElementById("productName");
   const customProductInput = document.getElementById("customProductName");
   const priceInput = document.getElementById("price");
@@ -44,16 +44,29 @@ function toggleBuyerInput() {
   }
 }
 
-function togglePaymentInput() {}
+function togglePaymentInput() {
+  const paymentType = document.getElementById("paymentMethod");
+  const paymentValueInput = document.getElementById("paymentValue");
+  const paymentTypeValue = paymentType.value;
+  if(paymentTypeValue === "online" || paymentTypeValue === "cash"){
+    paymentValueInput.style.display = "block";
+  }else{
+    paymentValueInput.style.display = "none";
+  }
+}
 
 function addStockForm() {
   const form = document.getElementById("addStockForm");
   const formData = new FormData(form); // Collect form data
   const buyerNameElement = document.getElementById("buyerName");
   const selectedBuyerOption = buyerNameElement.options[buyerNameElement.selectedIndex];
+  const productNameElement = document.getElementById("productName");
+  const selectedOption = productNameElement.options[productNameElement.selectedIndex];
+  const productId = selectedOption.getAttribute("data_id")
   const supplierId = selectedBuyerOption.id; // Get the selected option's ID
   const feedbackMessage = document.getElementById("feedbackMessage");
   formData.append('supplier_id', supplierId);
+  formData.append('product_id', productId);
 
   fetch("/add-stocks/", {
     method: "POST",

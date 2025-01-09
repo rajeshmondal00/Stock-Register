@@ -22,12 +22,18 @@ def add_stocks(request):
 
             # Additional Data from JavaScript
             supplier_id = request.POST.get("supplier_id", "").strip()
+            product_id = request.POST.get("product_id", "").strip()
 
-
+            Buy_Product.objects.create(
+                supp_id=supplier_id,
+                pro_id=product_id,
+                buy_quantity=quantity,
+                buy_date=date)
             # Process data
             print("quantity:",quantity)
             print("Supplier ID:", supplier_id)
             print("Product Name:", product_name)
+            print("Product ID:", product_id)
             return JsonResponse({'success': True, 'message': 'Stock added successfully.'}, status=200)
         # except Product.DoesNotExist:
         #     return JsonResponse({'success': False, 'message': 'Product not found.'})
@@ -40,6 +46,10 @@ def add_stocks(request):
 
 ## sell products from the stock
 def selling_product(request): 
+    if request.method == "POST":
+        product_id = request.POST.get("product_id", "").strip()
+        print(product_id)
+        return JsonResponse({'success': True, 'message': 'Stock added successfully.'}, status=200)
     products = Product.objects.all() # filter the product details
     return render(request,"sell_products.html",{"products":products})
 
@@ -49,7 +59,8 @@ def stock_details(request):
 
 
 def payments(request):
-    return render(request,"payments.html")
+    suppliers = Supplier.objects.all() # filter the supplier details
+    return render(request,"payments.html",{"suppliers":suppliers})
 
 ## view the payment details
 def payment_details(request):

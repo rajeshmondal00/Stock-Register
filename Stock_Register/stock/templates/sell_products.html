@@ -72,7 +72,7 @@
             <select id="productName" name="productName" onchange="toggleProductInput(event)">
                 <option value="">Select product</option>
                 {% for product in products %}
-                <option value="{{ product.pro_name }}" data-id="{{product.pro_id}}">{{ product.pro_name }}</option>
+                <option value="{{ product.pro_name }}" data_id="{{product.pro_id}}">{{ product.pro_name }}</option>
                 {% endfor %}
                 <option value="other">Other</option>
             </select>
@@ -91,15 +91,17 @@
             <input type="number" id="price" name="price" placeholder="Enter price" required>
 
             <label for="paymentMethod">Payment Method:</label>
-            <select id="paymentMethod" name="paymentMethod" required>
+            <select id="paymentMethod" name="paymentMethod" onchange="togglePaymentInput()" required>
                 <option value="">Select payment method</option>
                 <option value="cash">Cash</option>
                 <option value="credit">Credit</option>
                 <option value="online">Online</option>
             </select>
+            <input type="number" id="paymentValue" name="paymentValue" placeholder="Enter the Amount:" style="display: none; margin-top: 10px;">
 
             <button type="button" onclick="sellProductForm()">Sell Product</button>
         </form>
+        <div id="feedbackMessage"></div>
     </div>
     <script src="{% static '/js/sell_product.js' %}"></script>
 </body>
