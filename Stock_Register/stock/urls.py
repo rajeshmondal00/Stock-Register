@@ -11,6 +11,7 @@ urlpatterns = [
     path('payments/',views.payments,name="payments"),
     path('payment-details/',views.payment_details,name="payment_details"),
     path('get-product-price/',views.get_product_price,name="get_product_price"),
+    path('get-stock-details/',views.get_stock_details,name="get_stock_details"),
     # path('export-to-excel/', views.export_to_excel, name='export_to_excel'),
     # path('get-products/', views.get_products, name='get_products'),
     #path('view-stock/', views.view_stock, name='view_stock'),

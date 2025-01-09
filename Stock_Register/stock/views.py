@@ -55,7 +55,8 @@ def selling_product(request):
 
 ## view current details of the stock
 def stock_details(request):
-    return render(request,"stock_details.html")
+    products = Product.objects.all()
+    return render(request,"stock_details.html",{"products":products})
 
 
 def payments(request):
@@ -82,6 +83,23 @@ def get_product_price(request):
     except Product.DoesNotExist:
         return JsonResponse({'error': 'Product not found'}, status=404)
 
+def get_stock_details(request):
+    product_id = request.GET.get('product_id')
+    if not product_id:
+        return JsonResponse({'error': 'Product ID is required'}, status=400)
+
+    try:
+        # stock = Stock.objects.get(pro_id=product_id)
+        product = Product.objects.get(pro_id=product_id)
+        return JsonResponse({
+            'product_id': product.pro_id,
+            'product_name': product.pro_name,
+            'quantity': 100,
+            'price': product.pro_price,
+            'weight': product.weight
+        })
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product not found'}, status=404) 
 def export_to_excel(request):
     data = YourModel.objects.all().values()
     df = pd.DataFrame(list(data))

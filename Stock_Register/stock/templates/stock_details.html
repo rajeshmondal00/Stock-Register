@@ -113,8 +113,11 @@
 
         <!-- Search for Product -->
         <div class="search-container">
-            <select id="product-select">
+            <select id="product-select" >
                 <option value="">Select Product</option>
+                {% for product in products %}
+                <option value="{{ product.pro_name }}" data_id="{{product.pro_id}}">{{ product.pro_name }}</option>
+                {% endfor %}
                 <!-- Options will be populated dynamically -->
             </select>
             <button onclick="searchProductStock()">Search</button>
@@ -128,9 +131,8 @@
                     <tr>
                         <th>Product Name</th>
                         <th>Quantity</th>
-                        <th>Price per Unit</th>
-                        <th>Category</th>
-                        <th>Description</th>
+                        <th>Price per Bag</th>
+                        <th>Weight</th>
                     </tr>
                 </thead>
                 <tbody>
