@@ -2,7 +2,8 @@ from django.shortcuts import render
 import pandas as pd
 from django.http import HttpResponse,JsonResponse
 from .models import *
-import csv,json
+import csv
+from .utility import *
 ## home page
 def home(request):
     return render(request,"index.html")
@@ -10,36 +11,71 @@ def home(request):
 ## add products to the stock 
 def add_stocks(request):
     if request.method == "POST":
-            buyer_name = request.POST.get("buyerName", "").strip()
-            custom_buyer_name = request.POST.get("customBuyerName", "").strip()
-            product_name = request.POST.get("productName", "").strip()
-            custom_product_name = request.POST.get("customProductName", "").strip()
-            date = request.POST.get("date", "")
-            quantity = int(request.POST.get("quantity", 0))
-            weight = int(request.POST.get("Weight", 0))
-            payment_method = request.POST.get("paymentMethod", "").strip()
-            price = int(request.POST.get("price", 0))
-
-            # Additional Data from JavaScript
-            supplier_id = request.POST.get("supplier_id", "").strip()
-            product_id = request.POST.get("product_id", "").strip()
-
-            Buy_Product.objects.create(
-                supp_id=supplier_id,
-                pro_id=product_id,
-                buy_quantity=quantity,
-                buy_date=date)
-            # Process data
-            print("quantity:",quantity)
-            print("Supplier ID:", supplier_id)
-            print("Product Name:", product_name)
-            print("Product ID:", product_id)
-            return JsonResponse({'success': True, 'message': 'Stock added successfully.'}, status=200)
-        # except Product.DoesNotExist:
-        #     return JsonResponse({'success': False, 'message': 'Product not found.'})
-        # except Exception as e:
-        #     return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
-
+            try:
+                date = request.POST.get("date", "")
+                quantity = request.POST.get("quantity")
+                payment_method = request.POST.get("paymentMethod", "").strip()
+                payment_value = request.POST.get("paymentValue")
+                value = request.POST.get("paymentValue","").strip()
+                supplier_id = request.POST.get("supplier_id", "").strip()
+                product_id = request.POST.get("product_id", "").strip()
+                if payment_method == "cash" or payment_method == "online":
+                    supplier=Supplier.objects.get(supp_id=supplier_id)
+                    product=Product.objects.get(pro_id=product_id)
+                    auto_pay_id=id_generator()
+                    Payment.objects.create(
+                        pay_id=auto_pay_id,
+                        supp_id=supplier,
+                        type=payment_method,
+                        amount=int(payment_value),
+                        pay_date=date
+                    )
+                    payment = Payment.objects.get(pay_id=auto_pay_id)
+                    cash_auto_buy_id=id_generator()
+                    Buy_Product.objects.create(
+                        buy_id=cash_auto_buy_id,
+                        supp_id=supplier,
+                        pro_id=product,
+                        buy_quantity=int(quantity),
+                        buy_date=date,
+                        pay_id=payment)
+                    buy_product=Buy_Product.objects.get(buy_id=cash_auto_buy_id)
+                    Stock.objects.create(
+                        buy_id=buy_product,
+                        sto_id=id_generator(),
+                        pro_id=product,
+                        type="1",
+                        quantity=buy_product.buy_quantity,
+                        date=buy_product.buy_date,
+                        price=int(quantity)*product.pro_price
+                    )
+                    product.crt_quantity += int(quantity)
+                    product.save()
+                else:
+                    supplier=Supplier.objects.get(supp_id=supplier_id)
+                    product=Product.objects.get(pro_id=product_id)
+                    auto_buy_id=id_generator()
+                    Buy_Product.objects.create(
+                        buy_id=auto_buy_id,
+                        supp_id=supplier,
+                        pro_id=product,
+                        buy_quantity=quantity,
+                        buy_date=date)
+                    buy_product=Buy_Product.objects.get(buy_id=auto_buy_id)
+                    Stock.objects.create(
+                        buy_id=buy_product,
+                        sto_id=id_generator(),
+                        pro_id=buy_product.pro_id,
+                        type='1',
+                        date=buy_product.buy_date,
+                        quantity=buy_product.buy_quantity,
+                        price=int(quantity)*product.pro_price
+                    )
+                    product.crt_quantity += int(quantity)
+                    product.save()
+                return JsonResponse({'success': True, 'message': 'Stock added successfully.'}, status=200)
+            except Exception as e:
+                return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
     products = Product.objects.all() # filter the product details
     suppliers = Supplier.objects.all() # filter the supplier details
     return render(request,"add_stock.html",{"products":products,"suppliers":suppliers})
@@ -89,12 +125,12 @@ def get_stock_details(request):
         return JsonResponse({'error': 'Product ID is required'}, status=400)
 
     try:
-        # stock = Stock.objects.get(pro_id=product_id)
+        stock = Stock.objects.get(pro_id=product_id)
         product = Product.objects.get(pro_id=product_id)
         return JsonResponse({
             'product_id': product.pro_id,
             'product_name': product.pro_name,
-            'quantity': 100,
+            'quantity': stock.quantity,
             'price': product.pro_price,
             'weight': product.weight
         })
