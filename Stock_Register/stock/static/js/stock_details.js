@@ -32,7 +32,7 @@ function searchProductStock() {
 }
 
 function searchProductStockHistory() {
-    const selectedProduct = document.getElementById("product-select").value;
+    const selectedProduct = document.getElementById("product-select");
     const selectedProductInput = selectedProduct.options[selectedProduct.selectedIndex];
     const productId = selectedProductInput.getAttribute("data_id")
     if (!productId) {

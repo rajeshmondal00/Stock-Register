@@ -3,6 +3,7 @@ import pandas as pd
 from django.http import HttpResponse,JsonResponse
 from .models import *
 import csv
+from datetime import datetime
 from .utility import *
 ## home page
 def home(request):
@@ -46,7 +47,7 @@ def add_stocks(request):
                         buy_id=buy_product,
                         sto_id=id_generator(),
                         pro_id=product,
-                        type="1",
+                        type="Buy",
                         quantity=buy_product.buy_quantity,
                         date=buy_product.buy_date,
                         price=int(quantity)*product.pro_price
@@ -68,7 +69,7 @@ def add_stocks(request):
                         buy_id=buy_product,
                         sto_id=id_generator(),
                         pro_id=buy_product.pro_id,
-                        type='1',
+                        type='Buy',
                         date=buy_product.buy_date,
                         quantity=buy_product.buy_quantity,
                         price=int(quantity)*product.pro_price
@@ -86,13 +87,12 @@ def add_stocks(request):
 def selling_product(request): 
     if request.method == "POST":
         try:
-            buyer_name = request.POST.get("customerName","")
+            buyer_name = request.POST.get("customerName", "")
             product_id = request.POST.get("product_id", "").strip()
             payment_method = request.POST.get("paymentMethod", "").strip()
             quantity = request.POST.get("quantity")
             payment_value = request.POST.get("paymentValue")
             sell_date = request.POST.get("date", "").strip()
-            print(buyer_name)
             if payment_method == "cash" or payment_method == "online":
                 auto_pay_id=id_generator()
                 Payment.objects.create(
@@ -115,8 +115,9 @@ def selling_product(request):
                     sell_id=sell_product,
                     sto_id=id_generator(),
                     pro_id=product,
-                    type='2',
+                    type='Sold',
                     date=sell_product.sell_date,
+                    quantity=sell_product.sell_quantity,
                     price=int(quantity)*product.pro_price
                 )
                 product.crt_quantity -= int(quantity)
@@ -135,8 +136,9 @@ def selling_product(request):
                     sell_id=sell_product,
                     sto_id=id_generator(),
                     pro_id=product,
-                    type='2',
+                    type='Sold',
                     date=sell_product.sell_date,
+                    quantity=sell_product.sell_quantity,
                     price=int(quantity)*product.pro_price
                 )
                 product.crt_quantity -= int(quantity)
@@ -180,6 +182,28 @@ def payments(request):
 def payment_details(request):
     return render(request,"payment_details.html")
 
+def get_payment_history(request):
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+    try:
+        start_date=datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        stock_payments = Payment.objects.filter(pay_date=(start_date, end_date)).order_by('pay_date')
+        payment_data = [
+                {
+                    'date': payment.pay_date.strftime('%Y-%m-%d'),
+                    'payer_name': payment.payer_name,
+                    'supplier_name': payment.supp_id.supp_name,
+                    'amount': payment.amount,
+                    'payment_method': payment.type
+                }
+                for payment in stock_payments
+            ]
+
+        return JsonResponse(payment_data, safe=False, status=200)
+    
+    except Exception as e:
+        return JsonResponse({'error': 'An error occurred while fetching payment history.'}, status=500)
 def get_product_price(request):
     product_id = request.GET.get('product_id')
     if not product_id:
@@ -202,12 +226,11 @@ def get_stock_details(request):
         return JsonResponse({'error': 'Product ID is required'}, status=400)
 
     try:
-        stock = Stock.objects.get(pro_id=product_id)
         product = Product.objects.get(pro_id=product_id)
         return JsonResponse({
             'product_id': product.pro_id,
             'product_name': product.pro_name,
-            'quantity': stock.quantity,
+            'quantity': product.crt_quantity,
             'price': product.pro_price,
             'weight': product.weight
         })

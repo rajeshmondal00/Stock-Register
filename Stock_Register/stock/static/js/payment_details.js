@@ -21,7 +21,7 @@ document.getElementById('search-form').addEventListener('submit', async function
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${payment.date}</td>
-                        <td>${payment.payer_name}</td>
+                        <td>${payment.payer_name ? payment.payer_name : payment.supplier_name}</td>
                         <td>$${payment.amount}</td>
                         <td>${payment.payment_method}</td>
                         <td>${payment.description}</td>

@@ -30,7 +30,7 @@ class Payment(models.Model):
     pay_date = models.DateField()
 
     def __str__(self):
-        return f"Payer Name: {self.supp_id.supp_name}           Amount: {self.amount}           Date: {self.pay_date} "
+        return f"Payer ID: {self.pay_id} Amount: {self.amount} Date: {self.pay_date} "
     
 class Buy_Product(models.Model):
     buy_id = models.CharField(max_length=20, primary_key=True)
@@ -52,7 +52,7 @@ class Sell_Product(models.Model):
     pay_id = models.ForeignKey(Payment, on_delete=models.CASCADE,null=True)
 
     def __str__(self):
-        return self.sell_name
+        return f"Buyer Name: {self.sell_name}  Date: {self.sell_date}  Product Name: {self.pro_id.pro_name}"
 
 class Stock(models.Model):
     sto_id = models.CharField(max_length=20, primary_key=True)
@@ -66,7 +66,7 @@ class Stock(models.Model):
     quantity = models.IntegerField()
     price = models.IntegerField()
     buy_id = models.ForeignKey(Buy_Product, on_delete=models.CASCADE, null=True, blank=True)
-    sell_id = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True)
+    sell_id = models.ForeignKey(Sell_Product, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"Stock ID: {self.sto_id}"

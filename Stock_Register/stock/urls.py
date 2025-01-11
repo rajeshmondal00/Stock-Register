@@ -13,6 +13,7 @@ urlpatterns = [
     path('get-product-price/',views.get_product_price,name="get_product_price"),
     path('get-stock-details/',views.get_stock_details,name="get_stock_details"),
     path('get-stock-history/',views.get_stock_history,name="get_stock_history"),
+    path('get-payment-history/',views.get_payment_history,name="get_payment_history"),
     # path('export-to-excel/', views.export_to_excel, name='export_to_excel'),
     #path('download-data/<str:data_type>/', views.download_data, name='download_data'),
 ]
