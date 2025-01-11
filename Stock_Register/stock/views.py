@@ -16,12 +16,12 @@ def add_stocks(request):
                 quantity = request.POST.get("quantity")
                 payment_method = request.POST.get("paymentMethod", "").strip()
                 payment_value = request.POST.get("paymentValue")
-                value = request.POST.get("paymentValue","").strip()
                 supplier_id = request.POST.get("supplier_id", "").strip()
                 product_id = request.POST.get("product_id", "").strip()
                 if payment_method == "cash" or payment_method == "online":
                     supplier=Supplier.objects.get(supp_id=supplier_id)
                     product=Product.objects.get(pro_id=product_id)
+
                     auto_pay_id=id_generator()
                     Payment.objects.create(
                         pay_id=auto_pay_id,
@@ -30,6 +30,7 @@ def add_stocks(request):
                         amount=int(payment_value),
                         pay_date=date
                     )
+
                     payment = Payment.objects.get(pay_id=auto_pay_id)
                     cash_auto_buy_id=id_generator()
                     Buy_Product.objects.create(
@@ -39,6 +40,7 @@ def add_stocks(request):
                         buy_quantity=int(quantity),
                         buy_date=date,
                         pay_id=payment)
+                    
                     buy_product=Buy_Product.objects.get(buy_id=cash_auto_buy_id)
                     Stock.objects.create(
                         buy_id=buy_product,
@@ -83,9 +85,65 @@ def add_stocks(request):
 ## sell products from the stock
 def selling_product(request): 
     if request.method == "POST":
-        product_id = request.POST.get("product_id", "").strip()
-        print(product_id)
-        return JsonResponse({'success': True, 'message': 'Stock added successfully.'}, status=200)
+        try:
+            buyer_name = request.POST.get("customerName","")
+            product_id = request.POST.get("product_id", "").strip()
+            payment_method = request.POST.get("paymentMethod", "").strip()
+            quantity = request.POST.get("quantity")
+            payment_value = request.POST.get("paymentValue")
+            sell_date = request.POST.get("date", "").strip()
+            print(buyer_name)
+            if payment_method == "cash" or payment_method == "online":
+                auto_pay_id=id_generator()
+                Payment.objects.create(
+                    pay_id=auto_pay_id,
+                    type=payment_method,
+                    amount=int(payment_value),
+                    pay_date=sell_date)
+                payment=Payment.objects.get(pay_id=auto_pay_id)
+                product=Product.objects.get(pro_id=product_id)
+                auto_sell_id=id_generator()
+                Sell_Product.objects.create(
+                    sell_id=auto_sell_id,
+                    sell_name=buyer_name,
+                    pro_id=product,
+                    sell_quantity=quantity,
+                    sell_date=sell_date,
+                    pay_id=payment)
+                sell_product=Sell_Product.objects.get(sell_id=auto_sell_id)
+                Stock.objects.create(
+                    sell_id=sell_product,
+                    sto_id=id_generator(),
+                    pro_id=product,
+                    type='2',
+                    date=sell_product.sell_date,
+                    price=int(quantity)*product.pro_price
+                )
+                product.crt_quantity -= int(quantity)
+                product.save()
+            else:
+                product=Product.objects.get(pro_id=product_id)
+                auto_sell_id=id_generator()
+                Sell_Product.objects.create(
+                    sell_id=auto_sell_id,
+                    sell_name=buyer_name,
+                    pro_id=product,
+                    sell_quantity=quantity,
+                    sell_date=sell_date)
+                sell_product=Sell_Product.objects.get(sell_id=auto_sell_id)
+                Stock.objects.create(
+                    sell_id=sell_product,
+                    sto_id=id_generator(),
+                    pro_id=product,
+                    type='2',
+                    date=sell_product.sell_date,
+                    price=int(quantity)*product.pro_price
+                )
+                product.crt_quantity -= int(quantity)
+                product.save()
+            return JsonResponse({'success': True, 'message': 'Stock added successfully.'}, status=200)
+        except Exception as e:
+                return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
     products = Product.objects.all() # filter the product details
     return render(request,"sell_products.html",{"products":products})
 
@@ -94,7 +152,26 @@ def stock_details(request):
     products = Product.objects.all()
     return render(request,"stock_details.html",{"products":products})
 
-
+def get_stock_history(request):
+    product_id = request.GET.get('product_id')
+    if not product_id:
+        return JsonResponse({'error': 'Product ID is required'}, status=400)
+    try:
+        product = Product.objects.get(pro_id=product_id)
+        stocks = Stock.objects.filter(pro_id=product).order_by("-date")
+        stock_data = [
+            {
+            "date":stock.date.strftime("%Y-%m-%d"),
+            "transaction_type":stock.type,
+            "product_name":product.pro_name,
+            "quantity":stock.quantity,
+            "price":stock.price
+        }
+        for stock in stocks
+        ]
+        return JsonResponse({"history": stock_data}, status=200)
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product not found'}, status=404)
 def payments(request):
     suppliers = Supplier.objects.all() # filter the supplier details
     return render(request,"payments.html",{"suppliers":suppliers})

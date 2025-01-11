@@ -20,7 +20,7 @@ class Supplier(models.Model):
 
 class Payment(models.Model):
     pay_id = models.CharField(max_length=20, primary_key=True)
-    supp_id = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    supp_id = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True)
     TYPE_CHOICES = [
         ("cash", "Cash"),
         ("online", "Online")
@@ -30,7 +30,7 @@ class Payment(models.Model):
     pay_date = models.DateField()
 
     def __str__(self):
-        return f"Payer Name: {self.supp_id.supp_name}/t Amount: {self.amount}/t Date: {self.pay_date} "
+        return f"Payer Name: {self.supp_id.supp_name}           Amount: {self.amount}           Date: {self.pay_date} "
     
 class Buy_Product(models.Model):
     buy_id = models.CharField(max_length=20, primary_key=True)
@@ -66,7 +66,7 @@ class Stock(models.Model):
     quantity = models.IntegerField()
     price = models.IntegerField()
     buy_id = models.ForeignKey(Buy_Product, on_delete=models.CASCADE, null=True, blank=True)
-    supp_id = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True)
+    sell_id = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"Stock ID: {self.sto_id}"

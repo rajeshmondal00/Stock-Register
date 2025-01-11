@@ -31,6 +31,43 @@ function searchProductStock() {
 
 }
 
+function searchProductStockHistory() {
+    const selectedProduct = document.getElementById("product-select").value;
+    const selectedProductInput = selectedProduct.options[selectedProduct.selectedIndex];
+    const productId = selectedProductInput.getAttribute("data_id")
+    if (!productId) {
+        alert("Please select a product.");
+        return;
+    }
+
+    fetch(`/get-stock-history/?product_id=${productId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            const stockHistoryTable = document.querySelector("section:nth-of-type(2) table tbody");
+            stockHistoryTable.innerHTML = "";
+
+            if (data.history && data.history.length > 0) {
+                data.history.forEach((entry) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${entry.date}</td>
+                        <td>${entry.transaction_type}</td>
+                        <td>${entry.product_name}</td>
+                        <td>${entry.quantity}</td>
+                        <td>${entry.price}</td>
+                    `;
+                    stockHistoryTable.appendChild(row);
+                });
+            } else {
+                stockHistoryTable.innerHTML = "<tr><td colspan='5'>No history available for the selected product.</td></tr>";
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching stock history:", error);
+            alert("Failed to fetch stock history.");
+        });
+}
+
 function downloadExcel(dataType) {
     const urls = {
         product: '/download-product-data/',
