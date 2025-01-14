@@ -2,7 +2,7 @@ from django.shortcuts import render
 import pandas as pd
 from django.http import HttpResponse,JsonResponse
 from .models import *
-import csv
+import csv,json
 from datetime import datetime
 from .utility import *
 ## home page
@@ -180,27 +180,54 @@ def payments(request):
 
 ## view the payment details
 def payment_details(request):
+    if request.method == "POST":
+        try:
+            # Parse JSON data from request body
+            data = json.loads(request.body)
+
+            # Extract data from JSON
+            payer_name = data.get('payerName')
+            custom_buyer_name = data.get('customBuyerName')
+            amount = data.get('amount')
+            payment_method = data.get('payment_method')
+            date = data.get('date')
+            print(payer_name)
+            # Validate and process data
+            if not payer_name or not amount or not payment_method or not date:
+                return JsonResponse({'error': 'All fields are required.'}, status=400)
+
+            # Save to database (example model: Payment)
+            # payment = Payment.objects.create(
+            #     payer_name=payer_name,
+            #     amount=amount,
+            #     type=payment_method,
+            #     pay_date=date,
+            # )
+
+            # Respond with success
+            return JsonResponse({'success': True, 'message': 'Payment added successfully.'})
+
+        except Exception as e:
+            return JsonResponse({'error': f'An unexpected error occurred: {str(e)}'}, status=500)
+
     return render(request,"payment_details.html")
 
 def get_payment_history(request):
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
     try:
-        start_date=datetime.strptime(start_date, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
-        stock_payments = Payment.objects.filter(pay_date=(start_date, end_date)).order_by('pay_date')
+        stock_payments = Payment.objects.filter(pay_date__range=(start_date, end_date)).order_by('pay_date')
         payment_data = [
                 {
-                    'date': payment.pay_date.strftime('%Y-%m-%d'),
-                    'payer_name': payment.payer_name,
-                    'supplier_name': payment.supp_id.supp_name,
+                    'date': payment.pay_date,
+                    'supplier_name': payment.supp_id.supp_name if payment.supp_id else "N/A",
                     'amount': payment.amount,
                     'payment_method': payment.type
                 }
                 for payment in stock_payments
             ]
 
-        return JsonResponse(payment_data, safe=False, status=200)
+        return JsonResponse({"payment_data":payment_data}, status=200)
     
     except Exception as e:
         return JsonResponse({'error': 'An error occurred while fetching payment history.'}, status=500)

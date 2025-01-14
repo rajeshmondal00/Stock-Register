@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load static  %}
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -33,7 +33,7 @@
             margin-bottom: 20px;
             color: #2575fc;
         }
-        form {
+        .search-section {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
@@ -132,7 +132,7 @@
 <body>
     <div class="container">
         <h1>Payment History</h1>
-        <form id="search-form">
+        <div class="search-section">
             <div class="form-group">
                 <label for="start-date">Start Date:</label>
                 <input type="date" id="start-date" name="start_date" required>
@@ -141,8 +141,8 @@
                 <label for="end-date">End Date:</label>
                 <input type="date" id="end-date" name="end_date" required>
             </div>
-            <button type="submit">Search</button>
-        </form>
+            <button onclick="searchPaymentDetails()">Search</button>
+        </div>
         <table id="payment-table">
             <thead>
                 <tr>
