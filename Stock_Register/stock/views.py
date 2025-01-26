@@ -17,65 +17,172 @@ def add_stocks(request):
                 quantity = request.POST.get("quantity")
                 payment_method = request.POST.get("paymentMethod", "").strip()
                 payment_value = request.POST.get("paymentValue")
+                custome_buyer_name = request.POST.get("customBuyerName","").strip()
+                custome_pro_name = request.POST.get("customProductName","").strip()
                 supplier_id = request.POST.get("supplier_id", "").strip()
                 product_id = request.POST.get("product_id", "").strip()
-                if payment_method == "cash" or payment_method == "online":
-                    supplier=Supplier.objects.get(supp_id=supplier_id)
-                    product=Product.objects.get(pro_id=product_id)
-
-                    auto_pay_id=id_generator()
-                    Payment.objects.create(
-                        pay_id=auto_pay_id,
-                        supp_id=supplier,
-                        type=payment_method,
-                        amount=int(payment_value),
-                        pay_date=date
-                    )
-
-                    payment = Payment.objects.get(pay_id=auto_pay_id)
-                    cash_auto_buy_id=id_generator()
-                    Buy_Product.objects.create(
-                        buy_id=cash_auto_buy_id,
-                        supp_id=supplier,
-                        pro_id=product,
-                        buy_quantity=int(quantity),
-                        buy_date=date,
-                        pay_id=payment)
-                    
-                    buy_product=Buy_Product.objects.get(buy_id=cash_auto_buy_id)
-                    Stock.objects.create(
-                        buy_id=buy_product,
-                        sto_id=id_generator(),
-                        pro_id=product,
-                        type="Buy",
-                        quantity=buy_product.buy_quantity,
-                        date=buy_product.buy_date,
-                        price=int(quantity)*product.pro_price
-                    )
-                    product.crt_quantity += int(quantity)
-                    product.save()
+                weight = request.POST.get("Weight")
+                price = request.POST.get("price")
+                if custome_buyer_name != None and custome_pro_name != None:
+                    auto_buyer_id = id_generator()
+                    auto_pro_id = id_generator()
+                    Supplier.objects.create(supp_id=auto_buyer_id,supp_name=custome_buyer_name)
+                    Product.objects.create(pro_id=auto_pro_id,pro_name=custome_pro_name,crt_quantity=0,pro_price=price,weight=weight)
+                    if payment_method == "cash" or payment_method == "online":
+                        supplier=Supplier.objects.get(supp_id=auto_buyer_id)
+                        product=Product.objects.get(pro_id=auto_pro_id)
+                        auto_pay_id=id_generator()
+                        Payment.objects.create(pay_id=auto_pay_id,supp_id=supplier,type=payment_method,amount=int(payment_value),pay_date=date)
+                        payment = Payment.objects.get(pay_id=auto_pay_id)
+                        cash_auto_buy_id=id_generator()
+                        Buy_Product.objects.create(
+                            buy_id=cash_auto_buy_id,
+                            supp_id=supplier,
+                            pro_id=product,
+                            buy_quantity=int(quantity),
+                            buy_date=date,
+                            pay_id=payment)
+                        buy_product=Buy_Product.objects.get(buy_id=cash_auto_buy_id)
+                        Stock.objects.create(
+                            buy_id=buy_product,
+                            sto_id=id_generator(),
+                            pro_id=product,
+                            type="Buy",
+                            quantity=buy_product.buy_quantity,
+                            date=buy_product.buy_date,
+                            price=int(quantity)*product.pro_price
+                        )
+                        product.crt_quantity += int(quantity)
+                        product.save()
+                    else:
+                        supplier=Supplier.objects.get(supp_id=auto_buyer_id)
+                        product=Product.objects.get(pro_id=auto_pro_id)
+                        auto_buy_id=id_generator()
+                        Buy_Product.objects.create(
+                            buy_id=auto_buy_id,
+                            supp_id=supplier,
+                            pro_id=product,
+                            buy_quantity=quantity,
+                            buy_date=date)
+                        buy_product=Buy_Product.objects.get(buy_id=auto_buy_id)
+                        Stock.objects.create(
+                            buy_id=buy_product,
+                            sto_id=id_generator(),
+                            pro_id=buy_product.pro_id,
+                            type='Buy',
+                            date=buy_product.buy_date,
+                            quantity=buy_product.buy_quantity,
+                            price=int(quantity)*product.pro_price
+                        )
+                        product.crt_quantity += int(quantity)
+                        product.save()
+                elif custome_pro_name != None:
+                    auto_pro_id = id_generator()
+                    Product.objects.create(pro_id=auto_pro_id,pro_name=custome_pro_name,crt_quantity=0,pro_price=price,weight=weight)
+                    if payment_method == "cash" or payment_method == "online":
+                        supplier=Supplier.objects.get(supp_id=supplier_id)
+                        product=Product.objects.get(pro_id=auto_pro_id)
+                        auto_pay_id=id_generator()
+                        Payment.objects.create(pay_id=auto_pay_id,supp_id=supplier,type=payment_method,amount=int(payment_value),pay_date=date)
+                        payment = Payment.objects.get(pay_id=auto_pay_id)
+                        cash_auto_buy_id=id_generator()
+                        Buy_Product.objects.create(
+                            buy_id=cash_auto_buy_id,
+                            supp_id=supplier,
+                            pro_id=product,
+                            buy_quantity=int(quantity),
+                            buy_date=date,
+                            pay_id=payment)
+                        buy_product=Buy_Product.objects.get(buy_id=cash_auto_buy_id)
+                        Stock.objects.create(
+                            buy_id=buy_product,
+                            sto_id=id_generator(),
+                            pro_id=product,
+                            type="Buy",
+                            quantity=buy_product.buy_quantity,
+                            date=buy_product.buy_date,
+                            price=int(quantity)*product.pro_price
+                        )
+                        product.crt_quantity += int(quantity)
+                        product.save()
+                    else:
+                        supplier=Supplier.objects.get(supp_id=supplier_id)
+                        product=Product.objects.get(pro_id=auto_pro_id)
+                        auto_buy_id=id_generator()
+                        Buy_Product.objects.create(
+                            buy_id=auto_buy_id,
+                            supp_id=supplier,
+                            pro_id=product,
+                            buy_quantity=quantity,
+                            buy_date=date)
+                        buy_product=Buy_Product.objects.get(buy_id=auto_buy_id)
+                        Stock.objects.create(
+                            buy_id=buy_product,
+                            sto_id=id_generator(),
+                            pro_id=buy_product.pro_id,
+                            type='Buy',
+                            date=buy_product.buy_date,
+                            quantity=buy_product.buy_quantity,
+                            price=int(quantity)*product.pro_price
+                        )
+                        product.crt_quantity += int(quantity)
+                        product.save()
                 else:
-                    supplier=Supplier.objects.get(supp_id=supplier_id)
-                    product=Product.objects.get(pro_id=product_id)
-                    auto_buy_id=id_generator()
-                    Buy_Product.objects.create(
-                        buy_id=auto_buy_id,
-                        supp_id=supplier,
-                        pro_id=product,
-                        buy_quantity=quantity,
-                        buy_date=date)
-                    buy_product=Buy_Product.objects.get(buy_id=auto_buy_id)
-                    Stock.objects.create(
-                        buy_id=buy_product,
-                        sto_id=id_generator(),
-                        pro_id=buy_product.pro_id,
-                        type='Buy',
-                        date=buy_product.buy_date,
-                        quantity=buy_product.buy_quantity,
-                        price=int(quantity)*product.pro_price
-                    )
-                    product.crt_quantity += int(quantity)
-                    product.save()
+                    if payment_method == "cash" or payment_method == "online":
+                        supplier=Supplier.objects.get(supp_id=supplier_id)
+                        product=Product.objects.get(pro_id=product_id)
+                        auto_pay_id=id_generator()
+                        Payment.objects.create(
+                            pay_id=auto_pay_id,
+                            supp_id=supplier,
+                            type=payment_method,
+                            amount=int(payment_value),
+                            pay_date=date
+                        )
+                        payment = Payment.objects.get(pay_id=auto_pay_id)
+                        cash_auto_buy_id=id_generator()
+                        Buy_Product.objects.create(
+                            buy_id=cash_auto_buy_id,
+                            supp_id=supplier,
+                            pro_id=product,
+                            buy_quantity=int(quantity),
+                            buy_date=date,
+                            pay_id=payment)
+
+                        buy_product=Buy_Product.objects.get(buy_id=cash_auto_buy_id)
+                        Stock.objects.create(
+                            buy_id=buy_product,
+                            sto_id=id_generator(),
+                            pro_id=product,
+                            type="Buy",
+                            quantity=buy_product.buy_quantity,
+                            date=buy_product.buy_date,
+                            price=int(quantity)*product.pro_price
+                        )
+                        product.crt_quantity += int(quantity)
+                        product.save()
+                    else:
+                        supplier=Supplier.objects.get(supp_id=supplier_id)
+                        product=Product.objects.get(pro_id=product_id)
+                        auto_buy_id=id_generator()
+                        Buy_Product.objects.create(
+                            buy_id=auto_buy_id,
+                            supp_id=supplier,
+                            pro_id=product,
+                            buy_quantity=quantity,
+                            buy_date=date)
+                        buy_product=Buy_Product.objects.get(buy_id=auto_buy_id)
+                        Stock.objects.create(
+                            buy_id=buy_product,
+                            sto_id=id_generator(),
+                            pro_id=buy_product.pro_id,
+                            type='Buy',
+                            date=buy_product.buy_date,
+                            quantity=buy_product.buy_quantity,
+                            price=int(quantity)*product.pro_price
+                        )
+                        product.crt_quantity += int(quantity)
+                        product.save()
                 return JsonResponse({'success': True, 'message': 'Stock added successfully.'}, status=200)
             except Exception as e:
                 return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})

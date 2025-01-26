@@ -23,14 +23,14 @@ async function searchPaymentDetails() {
         row.innerHTML = `
                         <td>${payment.date}</td>
                         <td>${payment.supplier_name}</td>
-                        <td>$${payment.amount}</td>
+                        <td>${payment.amount}</td>
                         <td>${payment.payment_method}</td>
                     `;
         tableBody.appendChild(row);
       });
     } else {
       tableBody.innerHTML =
-        '<tr><td colspan="4" style="text-align: center;">No data found for the selected range.</td></tr>';
+        '<tr><td colspan="4" style="text-align: center;">No Transection is found.</td></tr>';
     }
   } catch (error) {
     console.error("Error fetching payment details:", error);
